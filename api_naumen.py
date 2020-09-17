@@ -6,6 +6,7 @@ import time
 
 class API_Naumen:
     driver = webdriver.Chrome(ChromeDriverManager().install())
+    driver.set_window_position(0, -2000)
 
     def start_naumen(self, login, password):
         """Функция старта наумена"""

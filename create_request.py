@@ -2,16 +2,13 @@ from api_naumen import API_Naumen
 import time
 
 
-class Flag_error(Exception):
-    pass
-
 
 def create_request(address: str,
                    serial_number: str,
                    contact_human: str,
                    contact_phone: str,
                    contact_email: str,
-                   flag_kkt: int):
+                   model_kkt):
     api = API_Naumen()
     driver = api.driver
     api.search_by_shop(address)
@@ -69,15 +66,7 @@ def create_request(address: str,
     """Добавить серийные номера"""
     serial_numbers = [sn.split("_")[0] for sn in serial_number.split()]
     for sn in serial_numbers:
-        if flag_kkt == 1:
-            sn = f'KKT_PILOT_FP{sn[3:6]}-Ф_SN:{sn}'
-        elif flag_kkt == 2:
-            sn = f'KKT_SHTRIH_РИТЕЙЛ-01Ф_SN:{sn}'
-        elif flag_kkt == 3:
-            sn = f'KKT_VIKI_MINI_SN:{sn}'
-        else:
-            print(f'Херня какая-то: не верно присвоен флаг {flag_kkt} для магазина {address}')
-            raise Flag_error
+        sn = model_kkt.replace('*', sn[3:6]) + sn
         # вставка по названию
         api.enter_words('//*[@id="titleSearchString"]',
                         sn,

@@ -2,38 +2,46 @@ import csv
 from create_address_shop import Create_address_shop
 from api_naumen import API_Naumen
 from selenium.common.exceptions import NoSuchElementException
+import time
 
 
-def create_dict_with_kkt():
+def take_tmp(prefix_store_, view_address_):
+    global prefix_store, view_address
+    prefix_store = prefix_store_
+    view_address = view_address_
+
+    print(prefix_store, view_address)
+
+
+def create_dict_with_kkt(scale_amount_zero):
     store_kkt = {}
     final_list = []
     bad_list = []
     with open('pull.csv', "r", newline="") as f:
         reader = csv.reader(f)
-        flag = int(input('Требуется ли добавить нули в начало серийного номера? Требуется цифра от 0 и больше'
-                         '(словами писать не требуется)\n'))
         for row in reader:
             row = " ".join(row).split(';')
             if len(row) < 3:
                 break
             bad_store, kkt, date = [x.strip().lower() for x in row]
             date, *_ = date.split(' ')
-            """если ккт пилот и не начинаются с нуля!!!"""
             if not kkt.startswith('0'):
-                kkt = '0' * flag + kkt
+                kkt = '0' * scale_amount_zero + kkt
 
             if store_kkt.get(bad_store):
                 store_kkt[bad_store].append(f'{kkt}_{date}')
             else:
                 store_kkt[bad_store] = [f'{kkt}_{date}']
     shop = Create_address_shop()
-    static_information = shop.get_information()
+
     total_lines = len(store_kkt)
+
     api = API_Naumen()
     count = 0
     for address, kkts in store_kkt.items():
         count += 1
-        address = shop.start(address, static_information)
+
+        address = shop.start(address, prefix_store, view_address)
         api.search_by_shop(address)
         try:
             store_naumen = api.driver.find_element_by_xpath('//*[@id="ServiceCallRegistrationNew.RegForm.'
@@ -62,7 +70,6 @@ def create_dict_with_kkt():
         except NoSuchElementException:
             store_naumen = f'Не_найден {address}'
             bad_list.append([store_naumen, kkts])
-        print('Проверено', count, 'из', total_lines)
 
     if len(bad_list) > 0:
         with open('bad.csv', "w", newline="") as file:
