@@ -207,9 +207,9 @@ class App:
             prefix_store = self.rad_prefix_store.get()
         scale_amount_zero = self.scale_amount_zero.get()
         model_kkt = self.rad_model_kkt.get()
-        contact_human = self.name_area
-        contact_phone = self.phone_area
-        contact_email = self.email_area
+        contact_human = self.name_area.get()
+        contact_phone = self.phone_area.get()
+        contact_email = self.email_area.get()
         create_list_kkt.take_tmp(prefix_store, view_address)
 
         store_kkt_date = create_list_kkt.create_dict_with_kkt(scale_amount_zero)
