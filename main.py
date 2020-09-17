@@ -10,7 +10,7 @@ def main():
     api = API_Naumen()
     api.start_naumen(login, password)
     store_kkt_date = create_list_kkt.create_dict_with_kkt()
-    flag_kkt = int(input('Требуется уточнить какия ККТ у данного контрагента?\n'
+    flag_kkt = int(input('Требуется уточнить какие ККТ у данного контрагента?\n'
                          '1- ККТ Pilot, вида KKT_PILOT_FP510-Ф_SN:0255100193912\n'
                          '2- KKT Шрих, вида KKT_SHTRIH_РИТЕЙЛ-01Ф_SN:0478930012035313\n'
                          '3- KKT Viki mini, вида KKT_VIKI_MINI_SN:0491002948\n'))

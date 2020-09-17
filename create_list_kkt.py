@@ -11,7 +11,7 @@ def create_dict_with_kkt():
     with open('pull.csv', "r", newline="") as f:
         reader = csv.reader(f)
         flag = int(input('Требуется ли добавить нули в начало серийного номера? Требуется цифра от 0 и больше'
-                         '(словами писать не требуется\n'))
+                         '(словами писать не требуется)\n'))
         for row in reader:
             row = " ".join(row).split(';')
             if len(row) < 3:
@@ -26,7 +26,6 @@ def create_dict_with_kkt():
                 store_kkt[bad_store].append(f'{kkt}_{date}')
             else:
                 store_kkt[bad_store] = [f'{kkt}_{date}']
-    print(store_kkt)
     shop = Create_address_shop()
     static_information = shop.get_information()
     total_lines = len(store_kkt)
