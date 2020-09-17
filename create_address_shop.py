@@ -4,11 +4,10 @@ import re
 from dadata import DadataAsync
 
 
-class Create_address_shop():
+class Create_address_shop:
 
     def start(self, address, prefix_store, view_address):
         if view_address == 1:
-            print(prefix_store, view_address, address)
             return self.__full_address(prefix_store, address)
         elif view_address == 2:
             return f'{prefix_store} {address}'
@@ -24,7 +23,6 @@ class Create_address_shop():
 
         async def check_address(address):
             res = await dadata.suggest(name="address", query=address, count=1)
-            print(res)
             try:
                 return f"{res[0]['data']['city']} {res[0]['data']['street']} " #{res[0]['data']['house']}"
             except IndexError:
@@ -60,7 +58,7 @@ class Create_address_shop():
             'европейский', 'капитолий', 'рио', 'проезд', 'олимп ', 'строение', 'дм ', 'детский мир',
             'алькор и ко', 'алькор ', ' ам ', ',', ' фо.', ' мо ', ' м.о ', ' мо.', ' форум ', 'иль де ботэ',
             'магазин', 'ситицентр', 'ситимол', 'карамель', 'трк', ' ток ', 'звездочка', 'элем. улично-дорожн.сети',
-            'проспект')
+            'проспект', '  ')
         if address.startswith('\"') or address.startswith('\''):
             address = address[1:-1]
         print(address)
