@@ -2,9 +2,9 @@ from api_naumen import API_Naumen
 import time
 
 
-
 def create_request(address: str,
                    serial_number: str,
+                   text_request: str,
                    contact_human: str,
                    contact_phone: str,
                    contact_email: str,
@@ -30,11 +30,7 @@ def create_request(address: str,
 
     serial_numbers_area = "\n".join(serial_numbers_area)
 
-    text_area = f"""Требуется заменить ФН
-Работы необходимо выполнить не ранее, чем за 21 день, и не позднее чем за 10 дней до даты блокировки ФН, указанной в \
-описании заявки
-
-{serial_numbers_area}"""
+    text_area = f"""{text_request}\n\n{serial_numbers_area}"""
 
     dict_id_area = {"call_description": text_area,
                     "contact_human": contact_human,
