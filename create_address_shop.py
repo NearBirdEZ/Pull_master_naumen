@@ -24,15 +24,13 @@ class Create_address_shop:
         async def check_address(address):
             res = await dadata.suggest(name="address", query=address, count=1)
             try:
-                return f"{res[0]['data']['city']} {res[0]['data']['street']} " #{res[0]['data']['house']}"
+                return f"{res[0]['data']['city']} {res[0]['data']['street']} "  # {res[0]['data']['house']}"
             except IndexError:
                 return f'bad {address}'
 
         loop = asyncio.new_event_loop()
         address = asyncio.run(check_address(address))
-        print(address)
         loop.close()
-
 
         return address
 

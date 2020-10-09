@@ -5,6 +5,7 @@ import create_request
 from api_naumen import API_Naumen
 from config import login, password
 
+"""Не рабочая система запуска скрипта. Многие функции и зависимости переписаны"""
 
 def main():
     api = API_Naumen()

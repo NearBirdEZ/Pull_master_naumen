@@ -30,6 +30,7 @@ def create_request(address: str,
 
     serial_numbers_area = "\n".join(serial_numbers_area)
 
+    """Формирование тела запроса"""
     text_area = f"""{text_request}\n\n{serial_numbers_area}"""
 
     dict_id_area = {"call_description": text_area,
@@ -62,13 +63,21 @@ def create_request(address: str,
     """Добавить серийные номера"""
     serial_numbers = [sn.split("_")[0] for sn in serial_number.split()]
     for sn in serial_numbers:
+        """Если в названии модели ккт присутсвует звездочка, значит это пилотовская ккт и необходимо указать ее модель
+        510 или 410. Данная информация хранится в серийном номере"""
         sn = model_kkt.replace('*', sn[3:6]) + sn
         # вставка по названию
         api.enter_words('//*[@id="titleSearchString"]',
                         sn,
                         '//*[@id="titleSearchRB"]')
-        """api.enter_words("invNumberSearchString", sn)
-        driver.find_element_by_id('invNumberSearchRB').click()"""
+
+        """
+        Возможность осуществлять поиск по серийному номеру. Отключена в связи с тем, что выше генерируется полное название,
+        а так же присутствует контрагент Детский мир, где черт ногу сломает
+        api.enter_words("invNumberSearchString", sn)
+        driver.find_element_by_id('invNumberSearchRB').click()
+        """
+
         driver.find_element_by_xpath('//*[@id="Resources.ServiceCallResourcesList.ServiceCallResourcesListActionConta' +
                                      'iner.ObjectListReport.tableListAndButtons.ServiceCallResourcesListServiceCallRe' +
                                      'sourcesList.SetRelationWizard.tableContainer.SearchResultsListParent.SearchResu' +
@@ -76,11 +85,14 @@ def create_request(address: str,
         driver.find_element_by_xpath('//*[@id="add"]/img').click()
     driver.find_element_by_id("next").click()
 
+    """После поиска всех ккт необходимо выйти на страницу запроса, клик по кнопке 'Next' ничего не решает"""
     driver.get(link_request)
 
     link_change_type = driver.find_element_by_xpath('//*[@id="ServiceCall.ServiceCallCard.SetServiceCallCase"]'
                                                     ).get_attribute("href")
     driver.get(link_change_type)
+
+    """Регистрация запроса с помощью заполнения финальных атрибутов заявки"""
 
     xpath_restore = '//*[@id="case"]/option[@nonshifted="Восстановление работоспособности"]'
     driver.find_element_by_xpath(xpath_restore).click()
@@ -92,6 +104,7 @@ def create_request(address: str,
     driver.get(link_request)
 
     time.sleep(1)
+    """Возвращаем номер заявки для записи в финальный список"""
     return number
 
 
