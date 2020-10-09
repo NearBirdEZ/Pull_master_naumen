@@ -11,11 +11,9 @@ from tkinter import scrolledtext
 from tkinter import messagebox
 from selenium.common.exceptions import NoSuchElementException
 
-
 """Записываем логи папку logs"""
 if not os.path.isdir("logs"):
     os.mkdir("logs")
-
 
 """Определяем название лога. Форматируем название по дате и времени"""
 path_log = f"log_pull_{datetime.now().date()}_{datetime.now().strftime('%H.%M')}.log"
@@ -25,6 +23,8 @@ os.chdir('logs')
 
 """Инициализируем уровень логов"""
 logging.basicConfig(filename=path_log, level=logging.CRITICAL)
+"""Возвращаемся обрастно в корневую папку"""
+os.chdir('../')
 
 
 class App:
@@ -199,8 +199,6 @@ class App:
             rad_prefix8.place(relx=0.65, rely=0.21)
             rad_prefix9.place(relx=0.65, rely=0.26)
             rad_prefix10.place(relx=0.05, rely=0.31)
-
-
 
             lbl_amount_zero = tk.Label(text='Требуется добавить в начало серийного\nномера нули?', bg='#5F5F5F',
                                        fg='white',

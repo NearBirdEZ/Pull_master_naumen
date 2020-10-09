@@ -1,6 +1,7 @@
+from api_naumen import API_Naumen
 import csv
 from create_address_shop import Create_address_shop
-from api_naumen import API_Naumen
+import os
 from selenium.common.exceptions import NoSuchElementException
 import time
 
@@ -18,7 +19,7 @@ def create_dict_with_kkt(scale_amount_zero):
     store_kkt = {}
     final_list = []
     bad_list = []
-    with open('./pull.csv', "r", newline="") as pull:
+    with open(os.getcwd() + '\\pull.csv', "r", newline="") as pull:
         reader = csv.reader(pull)
         for row in reader:
             row = " ".join(row).split(';')
