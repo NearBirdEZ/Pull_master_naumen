@@ -18,7 +18,7 @@ def create_dict_with_kkt(scale_amount_zero):
     store_kkt = {}
     final_list = []
     bad_list = []
-    with open('pull.csv', "r", newline="") as pull:
+    with open('./pull.csv', "r", newline="") as pull:
         reader = csv.reader(pull)
         for row in reader:
             row = " ".join(row).split(';')
