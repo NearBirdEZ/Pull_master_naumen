@@ -70,7 +70,9 @@ class App:
                                           font=("Arial", 13))  # Если префикса нет на радиокнопках
 
         self.text_request = scrolledtext.ScrolledText(gui_window, width=65,
-                                                      height=5)  # Текст, который требуется написать в заявку
+                                                      height=2)  # Текст, который требуется написать в заявку
+        self.entry_period_of_execution = tk.Entry(self.gui_window,
+                                                  width=50)  # слова "Срок действия" или "срок выполнения"
 
         self.rad_model_kkt = tk.StringVar(value=0)  # Вариант модели, у пилотовской есть * для указания разновидности
 
@@ -213,6 +215,14 @@ class App:
             self.text_request.place(relx=0.05, rely=0.53)
             self.text_request.insert(tk.END, 'Требуется замена фискального накопителя')
 
+            lbl_period_of_execution = tk.Label(text='Текст после серийного номера и до даты', bg='#5F5F5F', fg='white',
+                                               font=("Arial", 12))
+
+            lbl_period_of_execution.place(relx=0.25, rely=0.60)
+
+            self.entry_period_of_execution.place(relx=0.25, rely=0.64)
+            self.entry_period_of_execution.insert(tk.END, 'Срок действия до')
+
             lbl_model_kkt = tk.Label(text='Какого вида модель ККТ у заказчика?', bg='#5F5F5F', fg='white',
                                      font=("Arial", 14))
 
@@ -228,7 +238,7 @@ class App:
                                         variable=self.rad_model_kkt, bg='#5F5F5F', font=("Arial", 9),
                                         selectcolor='#5F5F5F', fg='white')
 
-            lbl_model_kkt.place(relx=0.2, rely=0.64)
+            lbl_model_kkt.place(relx=0.2, rely=0.67)
             rad_model1.place(relx=0.01, rely=0.70)
             rad_model2.place(relx=0.46, rely=0.70)
             rad_model3.place(relx=0.46, rely=0.73)
@@ -283,6 +293,7 @@ class App:
             if prefix_store == 'другое':
                 prefix_store = self.rad_entry_prefix11.get()
         scale_amount_zero = self.scale_amount_zero.get()
+        period_of_execution = self.entry_period_of_execution.get()
         model_kkt = self.rad_model_kkt.get()
         text_request = self.text_request.get('0.1', tk.END).lower()
         contact_human = self.name_area.get()
@@ -311,6 +322,7 @@ class App:
                         number = create_request.create_request(address,
                                                                serial_number,
                                                                text_request,
+                                                               period_of_execution,
                                                                contact_human,
                                                                contact_phone,
                                                                contact_email,

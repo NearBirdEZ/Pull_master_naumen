@@ -5,6 +5,7 @@ import time
 def create_request(address: str,
                    serial_number: str,
                    text_request: str,
+                   period_of_execution: str,
                    contact_human: str,
                    contact_phone: str,
                    contact_email: str,
@@ -25,7 +26,7 @@ def create_request(address: str,
         time.sleep(0.5)
 
     """Заполнение полей словами"""
-    serial_numbers_area = ["ККТ № " + line.split("_")[0] + " Срок действия " + line.split("_")[1]
+    serial_numbers_area = [f"ККТ № {line.split('_')[0]} {period_of_execution} {line.split('_')[1]}"
                            for line in serial_number.split()]
 
     serial_numbers_area = "\n".join(serial_numbers_area)
