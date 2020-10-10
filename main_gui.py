@@ -291,11 +291,11 @@ class App:
             prefix_store = self.rad_prefix_store.get()
             """Если радиокнопка вернула значение 'другое', значит значение необходимо взять из поля Entry напротив"""
             if prefix_store == 'другое':
-                prefix_store = self.rad_entry_prefix11.get()
+                prefix_store = self.rad_entry_prefix11.get().lower()
         scale_amount_zero = self.scale_amount_zero.get()
         period_of_execution = self.entry_period_of_execution.get()
         model_kkt = self.rad_model_kkt.get()
-        text_request = self.text_request.get('0.1', tk.END).lower()
+        text_request = self.text_request.get('0.1', tk.END)
         contact_human = self.name_area.get()
         contact_phone = self.phone_area.get()
         contact_email = self.email_area.get()
@@ -336,8 +336,9 @@ class App:
 
                     except NoSuchElementException:
                         """Вероятно, если вылетел эксепшен, значит в магазине отсутвует услуга 'Замена ФН'"""
-                        writer_bad.writerow([address, '0' * scale_amount_zero + alone_serial_number.split('_')[0],
-                                             'Не уалось зарегистрировать. Требуется проверка человеком'])
+                        for alone_serial_number in serial_number.split():
+                            writer_bad.writerow([address, '0' * scale_amount_zero + alone_serial_number.split('_')[0],
+                                                 'Не уалось зарегистрировать. Требуется проверка человеком'])
                     lbl_process.configure(text=f'Выполнено {count} из {total}')
 
     def begin(self):
