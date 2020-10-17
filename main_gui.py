@@ -45,9 +45,11 @@ class App:
 
         """Проверка на обновления"""
         if get_version():
-            answer = messagebox.askyesno('Обновление', 'Хорошие новости!\nВышло обновлени\nОбновить?')
+            answer = messagebox.askyesno('Обновление',
+                                         'Хорошие новости!\nВышло обновлени\nОбновить?\nНеобходимо скачать '
+                                         'папку Pull_Master_3000')
             if answer:
-                self.api.driver.get('https://github.com/NearBirdEZ/Pull_master_naumen/tree/master/Pull_Master_3000')
+                self.api.driver.get('https://github.com/NearBirdEZ/Pull_master_naumen')
 
         """----------------------------------------------------------------------------------------------------------"""
 
