@@ -47,7 +47,7 @@ class App:
         if get_version():
             answer = messagebox.askyesno('Обновление', 'Хорошие новости!\nВышло обновлени\nОбновить?')
             if answer:
-                self.api.driver.get('https://github.com/NearBirdEZ/Pull_master_naumen/blob/master/Pull_Master_3000')
+                self.api.driver.get('https://github.com/NearBirdEZ/Pull_master_naumen/tree/master/Pull_Master_3000')
 
         """----------------------------------------------------------------------------------------------------------"""
 
