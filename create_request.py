@@ -2,14 +2,17 @@ from api_naumen import API_Naumen
 import time
 
 
+class NoRegister(Exception):
+    pass
+
+
 def create_request(address: str,
                    serial_number: str,
                    text_request: str,
                    period_of_execution: str,
                    contact_human: str,
                    contact_phone: str,
-                   contact_email: str,
-                   model_kkt):
+                   contact_email: str, ):
     api = API_Naumen()
     driver = api.driver
     api.search_by_shop(address)
@@ -26,13 +29,13 @@ def create_request(address: str,
         time.sleep(0.5)
 
     """Заполнение полей словами"""
-    serial_numbers_area = [f"ККТ № {line.split('_')[0]} {period_of_execution} {line.split('_')[1]}"
+    serial_numbers_area = [f"{line.split('*')[0]} {period_of_execution} {line.split('*')[1]}"
                            for line in serial_number.split()]
 
     serial_numbers_area = "\n".join(serial_numbers_area)
 
     """Формирование тела запроса"""
-    text_area = f"""{text_request}\n\n{serial_numbers_area}"""
+    text_area = f"""{text_request}\n{serial_numbers_area}"""
 
     dict_id_area = {"call_description": text_area,
                     "contact_human": contact_human,
@@ -40,9 +43,12 @@ def create_request(address: str,
                     "contact_email": contact_email}
 
     for id_object in dict_id_area:
-        api.enter_words(id_object, dict_id_area[id_object])
-    driver.find_element_by_id("add").click()
+        api.enter_words(id_object, dict_id_area[id_object], t=0.1)
 
+    """БЛОК ПРЕРЫВАНИЯ СКРИПТА"""
+    #  raise NoRegister("Без регистрации, пожалуйста")
+
+    driver.find_element_by_id("add").click()
     """добавление ресурсов к заявке и перевод в статус "зарегистрирована"""
 
     "Сохраняем сылку на зарегистрированную заявку и ее номер"
@@ -62,11 +68,8 @@ def create_request(address: str,
     driver.get(link_add_resource)
 
     """Добавить серийные номера"""
-    serial_numbers = [sn.split("_")[0] for sn in serial_number.split()]
+    serial_numbers = [sn.split("*")[0] for sn in serial_number.split()]
     for sn in serial_numbers:
-        """Если в названии модели ккт присутсвует звездочка, значит это пилотовская ккт и необходимо указать ее модель
-        510 или 410. Данная информация хранится в серийном номере"""
-        sn = model_kkt.replace('*', sn[3:6]) + sn
         # вставка по названию
         api.enter_words('//*[@id="titleSearchString"]',
                         sn,
@@ -106,7 +109,7 @@ def create_request(address: str,
 
     time.sleep(1)
     """Возвращаем номер заявки для записи в финальный список"""
-    return number
+    return number, link_request
 
 
 if __name__ == '__main__':

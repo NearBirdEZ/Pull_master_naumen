@@ -2,29 +2,13 @@ from api_naumen import API_Naumen
 import create_request
 import create_list_kkt
 import csv
-from datetime import datetime
-import logging
 import os.path
 import threading
 import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import messagebox
 from selenium.common.exceptions import NoSuchElementException
-
-"""Записываем логи папку logs"""
-if not os.path.isdir("logs"):
-    os.mkdir("logs")
-
-"""Определяем название лога. Форматируем название по дате и времени"""
-path_log = f"log_pull_{datetime.now().date()}_{datetime.now().strftime('%H.%M')}.log"
-
-"""Для записи логов меняем деректорию"""
-os.chdir('logs')
-
-"""Инициализируем уровень логов"""
-logging.basicConfig(filename=path_log, level=logging.CRITICAL)
-"""Возвращаемся обрастно в корневую папку"""
-os.chdir('../')
+from version import get_version
 
 
 class App:
@@ -33,6 +17,7 @@ class App:
     def __init__(self, gui_window):
         self.gui_window = gui_window
         self.gui_window.title('Пулл-мастер 3000')
+        self.gui_window.iconbitmap(os.getcwd() + '\\icon.ico')
         self.gui_window.geometry('600x600')
         self.gui_window['bg'] = '#5F5F5F'
 
@@ -58,23 +43,22 @@ class App:
         self.btn_send.place(relx=0.24, rely=0.59)
         self.btn_clear.place(relx=0.54, rely=0.59)
 
+        """Проверка на обновления"""
+        if get_version():
+            answer = messagebox.askyesno('Обновление', 'Хорошие новости!\nВышло обновлени\nОбновить?')
+            if answer:
+                self.api.driver.get('https://github.com/NearBirdEZ/Pull_master_naumen/blob/master/Pull_Master_3000')
+
         """----------------------------------------------------------------------------------------------------------"""
 
         self.rad_view_address = tk.IntVar()  # Информации с радиокнопок о виде адреса
 
         self.rad_prefix_store = tk.StringVar(value=0)  # Информация о префиксе магазина
-        self.rad_entry_prefix11 = tk.Entry(self.gui_window, width=50, state='disable')
-
-        self.scale_amount_zero = tk.Scale(self.gui_window, from_=0, to=10, orient=tk.HORIZONTAL, length=400,
-                                          bg='#5F5F5F', fg='white',
-                                          font=("Arial", 13))  # Если префикса нет на радиокнопках
-
-        self.text_request = scrolledtext.ScrolledText(gui_window, width=65,
-                                                      height=2)  # Текст, который требуется написать в заявку
-        self.entry_period_of_execution = tk.Entry(self.gui_window,
-                                                  width=50)  # слова "Срок действия" или "срок выполнения"
-
-        self.rad_model_kkt = tk.StringVar(value=0)  # Вариант модели, у пилотовской есть * для указания разновидности
+        self.rad_entry_prefix11 = tk.Entry(self.gui_window, width=35, state='disable', font=("Courier", 12, "italic"))
+        # Текст, который требуется написать в заявку
+        self.text_request = scrolledtext.ScrolledText(gui_window, width=52, height=3, font=("Courier", 12, "italic"))
+        # слова "Срок действия" или "срок выполнения"
+        self.entry_period_of_execution = tk.Entry(self.gui_window, width=54, font=("Courier", 12, "italic"))
 
         self.name_area = tk.Entry(self.gui_window, width=50)  # Контактное лицо
         self.phone_area = tk.Entry(self.gui_window, width=50)  # Контактный телефон
@@ -82,15 +66,8 @@ class App:
 
         self.btn_start = tk.Button(gui_window, text='Запустить выполнение пулла', command=self.begin, bg='#5F5F5F',
                                    fg='white', font=("Arial", 13))
-        self.btn_view = tk.Button(text='Показать процесс в браузере', command=self.view, bg='#5F5F5F',
-                                  fg='white', font=("Arial", 13))
 
     """-------------------------------------------------------------------------------------------------------------"""
-
-    def view(self):
-        """Функция, которая возвращает браузер из далеких земель обратно на экран"""
-        self.api.driver.set_window_position(0, 0)
-        self.btn_view.configure(state='disabled')
 
     def clear(self):
         """Функция очиски логина и пароля"""
@@ -125,7 +102,7 @@ class App:
             self.lbl_l_naumen.destroy()
             self.login_area.destroy()
             self.password_area.destroy()
-            self.gui_window.geometry('600x800')
+            self.gui_window.geometry('600x750')
 
             """-----------------------------------------------------------------------------------------------------"""
 
@@ -142,9 +119,9 @@ class App:
                                        selectcolor='#5F5F5F', fg='white')
 
             lbl_view_address.pack()
-            rad_view1.place(relx=0.05, rely=0.045)
-            rad_view2.place(relx=0.3, rely=0.045)
-            rad_view3.place(relx=0.6, rely=0.045)
+            rad_view1.place(relx=0.05, rely=0.055)
+            rad_view2.place(relx=0.3, rely=0.055)
+            rad_view3.place(relx=0.6, rely=0.055)
             self.rad_view_address.set(1)
 
             lbl_prefix = tk.Label(text='Для какого магазина запускаем пулл?', bg='#5F5F5F', fg='white',
@@ -190,58 +167,31 @@ class App:
                                           command=self.enable_entry)
             self.rad_prefix_store.set('алькор и ко')
 
-            lbl_prefix.place(relx=0.2, rely=0.11)
-            rad_prefix1.place(relx=0.05, rely=0.16)
-            rad_prefix2.place(relx=0.05, rely=0.21)
-            rad_prefix3.place(relx=0.05, rely=0.26)
-            rad_prefix4.place(relx=0.35, rely=0.16)
-            rad_prefix5.place(relx=0.35, rely=0.21)
-            rad_prefix6.place(relx=0.35, rely=0.26)
-            rad_prefix7.place(relx=0.65, rely=0.16)
-            rad_prefix8.place(relx=0.65, rely=0.21)
-            rad_prefix9.place(relx=0.65, rely=0.26)
-            rad_prefix10.place(relx=0.05, rely=0.31)
-
-            lbl_amount_zero = tk.Label(text='Требуется добавить в начало серийного\nномера нули?', bg='#5F5F5F',
-                                       fg='white',
-                                       font=("Arial", 14))
-
-            lbl_amount_zero.place(relx=0.2, rely=0.35)
-            self.scale_amount_zero.place(relx=0.16, rely=0.43)
+            lbl_prefix.place(relx=0.2, rely=0.13)
+            rad_prefix1.place(relx=0.05, rely=0.18)
+            rad_prefix2.place(relx=0.05, rely=0.25)
+            rad_prefix3.place(relx=0.05, rely=0.32)
+            rad_prefix4.place(relx=0.35, rely=0.18)
+            rad_prefix5.place(relx=0.35, rely=0.25)
+            rad_prefix6.place(relx=0.35, rely=0.32)
+            rad_prefix7.place(relx=0.65, rely=0.18)
+            rad_prefix8.place(relx=0.65, rely=0.25)
+            rad_prefix9.place(relx=0.65, rely=0.32)
+            rad_prefix10.place(relx=0.05, rely=0.39)
 
             lbl_text_request = tk.Label(text='Текст заявки', bg='#5F5F5F', fg='white', font=("Arial", 14))
 
-            lbl_text_request.place(relx=0.4, rely=0.49)
-            self.text_request.place(relx=0.05, rely=0.53)
+            lbl_text_request.place(relx=0.4, rely=0.45)
+            self.text_request.place(relx=0.05, rely=0.505)
             self.text_request.insert(tk.END, 'Требуется замена фискального накопителя')
 
             lbl_period_of_execution = tk.Label(text='Текст после серийного номера и до даты', bg='#5F5F5F', fg='white',
-                                               font=("Arial", 12))
+                                               font=("Arial", 14))
 
-            lbl_period_of_execution.place(relx=0.25, rely=0.60)
+            lbl_period_of_execution.place(relx=0.20, rely=0.62)
 
-            self.entry_period_of_execution.place(relx=0.25, rely=0.64)
+            self.entry_period_of_execution.place(relx=0.05, rely=0.68)
             self.entry_period_of_execution.insert(tk.END, 'Срок действия до')
-
-            lbl_model_kkt = tk.Label(text='Какого вида модель ККТ у заказчика?', bg='#5F5F5F', fg='white',
-                                     font=("Arial", 14))
-
-            rad_model1 = tk.Radiobutton(self.gui_window,
-                                        text='KKT_PILOT_FP510-Ф_SN:0255100193912\nKKT_PILOT_FP410-Ф_SN:0254100193912',
-                                        value='KKT_PILOT_FP*-Ф_SN:', variable=self.rad_model_kkt,
-                                        bg='#5F5F5F', font=("Arial", 9), selectcolor='#5F5F5F', fg='white')
-            rad_model2 = tk.Radiobutton(self.gui_window, text='KKT_SHTRIH_РИТЕЙЛ-01Ф_SN:0478930012035313',
-                                        value='KKT_SHTRIH_РИТЕЙЛ-01Ф_SN:',
-                                        variable=self.rad_model_kkt, bg='#5F5F5F', font=("Arial", 9),
-                                        selectcolor='#5F5F5F', fg='white')
-            rad_model3 = tk.Radiobutton(self.gui_window, text='KKT_VIKI_MINI_SN:0491002948', value='KKT_VIKI_MINI_SN:',
-                                        variable=self.rad_model_kkt, bg='#5F5F5F', font=("Arial", 9),
-                                        selectcolor='#5F5F5F', fg='white')
-
-            lbl_model_kkt.place(relx=0.2, rely=0.67)
-            rad_model1.place(relx=0.01, rely=0.70)
-            rad_model2.place(relx=0.46, rely=0.70)
-            rad_model3.place(relx=0.46, rely=0.73)
 
             lbl_contact_human = tk.Label(text='ФИО контактного лица', bg='#5F5F5F', fg='white',
                                          font=("Arial", 12))
@@ -266,14 +216,13 @@ class App:
         self.rad_entry_prefix11.configure(state='disable')
 
     def enable_entry(self):
-        self.rad_entry_prefix11.place(relx=0.25, rely=0.315)
+        self.rad_entry_prefix11.place(relx=0.25, rely=0.4)
         self.rad_entry_prefix11.configure(state='normal')
 
     def func(self):
 
         """Основная функция запуска выполнения пулла"""
-        self.btn_start.destroy()  # Отключение кнопки старт
-        self.btn_view.place(relx=0.305, rely=0.95)  # Подмена кнопки Старт на "Показать выполнение в браузере"
+        self.btn_start.configure(state='disable')  # Отключение кнопки старт
         lbl_process = tk.Label(text='Процесс запущен, требуется время для выполнения', bg='#5F5F5F', fg='white',
                                font=("Arial", 10))
         lbl_process.place(relx=0.25, rely=0.91)
@@ -292,19 +241,15 @@ class App:
             """Если радиокнопка вернула значение 'другое', значит значение необходимо взять из поля Entry напротив"""
             if prefix_store == 'другое':
                 prefix_store = self.rad_entry_prefix11.get().lower()
-        scale_amount_zero = self.scale_amount_zero.get()
         period_of_execution = self.entry_period_of_execution.get()
-        model_kkt = self.rad_model_kkt.get()
         text_request = self.text_request.get('0.1', tk.END)
         contact_human = self.name_area.get()
         contact_phone = self.phone_area.get()
         contact_email = self.email_area.get()
 
-        """Костыль, который был не продуман при создании gui"""
-        create_list_kkt.transfer_kostil(prefix_store, view_address)
-
-        store_kkt_date = create_list_kkt.create_dict_with_kkt(scale_amount_zero)
-        """Файлы создаются при любом раскладе, т.к. ВСЕГДА что-то может пойти не так и эту информацию нужно записывать"""
+        store_kkt_date = create_list_kkt.create_dict_with_kkt(prefix_store, view_address)
+        """Файлы создаются при любом раскладе, т.к. ВСЕГДА что-то может пойти не так и эту информацию 
+        нужно записывать"""
         with open('final.csv', "w", newline="") as final:
             with open('what_happened.csv', "w", newline="") as bad:
                 writer_final = csv.writer(final, delimiter=';')
@@ -319,26 +264,27 @@ class App:
                     try:
                         """После всех подготовок начинается создание заявок. 
                         Программа как автопило Теслы - человек должен следить"""
-                        number = create_request.create_request(address,
-                                                               serial_number,
-                                                               text_request,
-                                                               period_of_execution,
-                                                               contact_human,
-                                                               contact_phone,
-                                                               contact_email,
-                                                               model_kkt)
+                        number, link = create_request.create_request(address,
+                                                                     serial_number,
+                                                                     text_request,
+                                                                     period_of_execution,
+                                                                     contact_human,
+                                                                     contact_phone,
+                                                                     contact_email, )
                         #  writer_final.writerow([address, serial_number, number]) устаревшая запись в файл
                         """Запись каждой ккт на новой строке
                         Сделано для последующего использования ВПР"""
                         for alone_serial_number in serial_number.split():
                             writer_final.writerow(
-                                [address, '0' * scale_amount_zero + alone_serial_number.split('_')[0], number])
+                                [address, alone_serial_number.split('*')[0].split(':')[1], number, link])
 
                     except NoSuchElementException:
                         """Вероятно, если вылетел эксепшен, значит в магазине отсутвует услуга 'Замена ФН'"""
                         for alone_serial_number in serial_number.split():
-                            writer_bad.writerow([address, '0' * scale_amount_zero + alone_serial_number.split('_')[0],
-                                                 'Не уалось зарегистрировать. Требуется проверка человеком'])
+                            writer_bad.writerow(
+                                [address, alone_serial_number.split('*')[0].split(':')[1],
+                                 alone_serial_number.split('*')[1],
+                                 'Не уалось зарегистрировать. Требуется проверка человеком'])
                     lbl_process.configure(text=f'Выполнено {count} из {total}')
 
     def begin(self):

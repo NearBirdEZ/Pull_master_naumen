@@ -34,13 +34,6 @@ class Create_address_shop:
 
         return address
 
-    def __replace_pattern(self, pattern, address):
-        replaces = re.search(pattern, address)
-        if replaces:
-            replaces = replaces.group(0)
-            address = address.replace(replaces, ' ')
-        return address
-
     def __full_address(self, name_shop, address):
         address_tmp = address
 
@@ -57,26 +50,21 @@ class Create_address_shop:
             'алькор и ко', 'алькор ', ' ам ', ',', ' фо.', ' мо ', ' м.о ', ' мо.', ' форум ', 'иль де ботэ',
             'магазин', 'ситицентр', 'ситимол', 'карамель', 'трк', ' ток ', 'звездочка', 'элем. улично-дорожн.сети',
             'проспект', '  ')
+
         if address.startswith('\"') or address.startswith('\''):
             address = address[1:-1]
-        print(address)
-        for _ in range(5):
-            address = self.__replace_pattern(r'((“)|(\")|(\')|(\«)|(\())[\D\d]*((\")|(\')|(\»)|(\)|(”)))',
-                                             address).strip()
 
-            address = self.__replace_pattern(r'\d{4, }', address).strip()
-
-            address = self.__replace_pattern(r'^\d{1, }', address).strip()
-
-        address = self.__replace_pattern(r'[/][\w]*', address).strip()
-
-        address = self.__replace_pattern(r'\w{3,}\d{1,}', address).strip()
+        address = re.sub(r'\d{4, }|'
+                         r'^\d{1, }|'
+                         r'[/][\w]*|'
+                         r'\w{3,}\d{1, }|'
+                         r'((“)|(\")|(\')|(\«)|(\())[\D\d]*((\")|(\')|(\»)|(\)|(”)))', ' ', address.lower()).strip()
 
         for rep in resplaces:
             address = address.strip().replace(rep, ' ')
 
-        address = self.__dadata_address_shop(address)
-        address = ". ".join(address.split('.')).replace('-й', ' ')
+        address = self.__dadata_address_shop(address).replace('-й', ' ').lower()
+
         if 'none' in address:
             address = f'bad {address_tmp}'
         if address.startswith('bad'):
