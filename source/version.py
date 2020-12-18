@@ -4,7 +4,7 @@ import os.path
 
 
 def get_version():
-    v = requests.get('https://github.com/NearBirdEZ/Pull_master_naumen/blob/master/version')
+    v = requests.get('https://github.com/NearBirdEZ/Pull_master_naumen/blob/master/source/version')
     soup = BeautifulSoup(v.text, 'html.parser')
     version_online = float(soup.find('td', class_='blob-code blob-code-inner js-file-line').get_text())
     with open(os.getcwd() + '\\version', 'r') as file_with_version:
