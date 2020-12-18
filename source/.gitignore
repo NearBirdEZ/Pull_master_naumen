@@ -1,0 +1,6 @@
+logs
+__pycache__
+.idea
+final.csv
+what_happened.csv
+debug.log
